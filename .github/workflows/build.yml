@@ -1,0 +1,31 @@
+name: Build VST3
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            name: Windows
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.name }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Konfiguracja
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Budowanie
+        run: cmake --build build --config Release --parallel
+
+      - name: Wgraj artefakt
+        uses: actions/upload-artifact@v4
+        with:
+          name: SoundMaster-Windows-VST3
+          path: build/SimpleVerb_artefacts/Release/VST3
